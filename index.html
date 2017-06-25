@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<title>Coq + Atom == ♥</title>
+	<meta charset="utf-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="node_modules/shower-ribbon/styles/screen-4x3.css">
+  <style>
+  span.thing {
+    position: absolute;
+    top: 0;
+    right: 113px;
+    padding-top: 45px;
+    font-size: 0.7em;
+    color: white;
+    text-align: center;
+    z-index: 6;
+    -webkit-print-color-adjust:exact;
+    -webkit-text-size-adjust:none;
+  }
+
+  .slide::after {
+    padding-top: 8px!important;
+  }
+  </style>
+</head>
+<body class="shower full">
+
+	<header class="caption">
+		<h1>Разработка плагина языка <code>Coq</code> для редактора <code>Atom</code></h1>
+	</header>
+
+	<section class="slide" id="cover">
+    <div class="title">
+      <p>Институт математики, механики и компьютерных наук имени И. И. Воровича<br>
+        02.03.02 — Фундаментальная информатика и информационные технологии<p>
+  		<h2 style="margin-top:1em;margin-bottom:1em">
+        Разработка плагина языка <code>Coq</code> для редактора <code>Atom</code></h2>
+  		<p style="text-align:right"><b>Выполнил</b>: Стребежев. И.А.<br><b>Научный руководитель</b>: к.т.н. ст. преп. Алымова Е.В.</p>
+    </div>
+
+		<figure>
+			<!-- <img class="cover" src="pictures/laptop.jpg" alt="laptop" style="object-fit:cover;height:100%"> -->
+		</figure>
+
+    <div style="position:absolute;bottom:0;width:100%;color:black;z-index:5;background-color:white;left:0;padding:0 1em;text-align:center">2017</div>
+
+		<style>
+      #cover div.title {
+        /*background-color: rgba(0, 0, 0, 0.35);*/
+        position: absolute;
+        padding: 0 5%;
+        left: 0;
+        z-index: 1;
+        }
+      /*#cover div.title::before {
+        content: '';
+        /* margin: -35px;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        /*filter: blur(8px);
+        /*z-index: -1;
+        /*background-image: url(pictures/laptop.jpg);
+        /*background-position: 50% 19.5%;
+        /*background-size: 112.5%;
+        /*background-repeat: no-repeat;
+        overflow: hidden;
+      }*/
+
+      #cover div > * {
+        color: black;
+        /*color: hsla(214, 47%, 84%, 1);*/
+      }
+			#cover h2 {
+        color: #333 !important;
+        /*text-shadow: #32322e 0px 0px 20px;*/
+				margin:30px 0 0;
+				text-align:center;
+				font-size:70px;
+				}
+			#cover p {
+				margin:10px 0 0;
+        color: black;
+        /*text-shadow: black 0px 0px 20px;*/
+				text-align:center;
+				font-size:20px;
+				}
+      #cover::after {
+        display:none;
+      }
+		</style>
+	</section>
+
+	<section class="slide">
+		<h2>Постановка задачи</h2>
+		<ol>
+			<li>Подсветка синтаксиса</li>
+			<li>Сниппеты, автодополнение</li>
+			<li>Компиляция предложений по шагам</li>
+			<li>Запоминание вычисленных результатов</li>
+			<li>Генерация веток для сопоставление с образцома</li>
+			<li>Автодополнение, основанное на выводе типов</li>
+		</ol>
+		<p class="note"></p>
+    <span class="thing">/11</span>
+
+	</section>
+
+	<section class="slide">
+		<h2>Подсветка синтаксиса</h2>
+
+    <br>
+
+    <pre class="next">
+      <code style="color:#e45649">inductive_type_decl:</code>
+      <code>  <span style="color:#e45649">comment</span>: <span style="color:#50a14f">"Inductive type declarations"</span></code>
+      <code>  <span style="color:#e45649">match</span>:   <span style="color:#50a14f">"(CoInductive|Inductive)\\s+([a-z][a-z0-9_\']*)"</code>
+      <code>  <span style="color:#e45649">captures</span>:</code>
+      <code>    1:</code>
+      <code>      <span style="color:#e45649">name</span>: <span style="color:#50a14f">"keyword.source.coq"</span></code>
+      <code>    2:</code>
+      <code>      <span style="color:#e45649">name</span>: <span style="color:#50a14f">"entity.name.type.coq"</span></code>
+    </pre>
+    <span class="thing">/11</span>
+
+	</section>
+
+
+  <section class="slide">
+		<figure>
+			<img class="cover" src="pictures/highlight.png">
+    </figure>
+    <span class="thing">/11</span>
+  </section>
+
+  <section class="slide">
+    <h2>Сниппеты</h2>
+
+    <p>Встраиваемый блок кода или контекстная подсказка.
+
+    <ul>
+      <li>Список модулей</li>
+      <li>Список тактик</li>
+      <li>Основные операторы</li>
+    </ul>
+
+    <p class=next><span style="color:orange">Проблема!</span> тактик более <span style="color:red">200</span>, имеют смысл <em>только внутри</em> доказательств
+
+    <p class=next><span style="color:orange">Проблема!</span> компилятор не предоставляет контекстных подсказок (вообще)
+      <span class="thing">/11</span>
+
+  </section>
+
+  <section class="slide">
+    <figure>
+			<img class="cover" src="pictures/snippet.png">
+    </figure>
+      <span class="thing">/11</span>
+  </section>
+
+  <section class="slide">
+    <h2>Сoqtop</h2>
+
+    <code>coqtop</code> — дочерний процесс в интерактивном режиме
+
+    <figure>
+			<img style="padding:2em 3em;width:95%" src="pictures/pr.svg">
+    </figure>
+  <!-- </section> -->
+    <!-- </figure> -->
+    <span class="thing">/11</span>
+  </section>
+
+  <section class="slide">
+    <h2>Компиляция по шагам</h2>
+
+    <p>Каждое предложение получает свой stateId после компиляции.</p>
+
+    <figure>
+			<img class="cover w" style="padding:3em;margin-top:4em" src="pictures/k.svg">
+    </figure>
+    <span class="thing">/11</span>
+
+  </section>
+
+  <section class="slide">
+    <figure>
+      <img class="cover" src="pictures/steps.png">
+    </figure>
+    <span class="thing">/11</span></section>
+
+  <section class="slide">
+    <h2>Запоминание промежуточных результатов</h2>
+
+    <ul>
+      <li>Скомпилированные предложения могут вернуть результат</li>
+      <li>Деревья вывода меняются в процессе доказательства</li>
+    </ul>
+
+    <figure><img class="cover w" src="pictures/evals.png"></figure>
+
+    <p class="note" style="margin-top:8em">Этой функциональности нет в других редакторах</p>
+    <span class="thing">/11</span>
+  </section>
+
+  <section class="slide">
+    <h2>Сопоставление с образцом</h2>
+
+    <p>Пусть <code>n : nat</code> — переменная
+
+    <p>Нужно знать определение типа <code>nat</code>, чтобы сделать сопоставление
+
+    <pre class="kek">
+      <code><span style="color:#e45649">match</span> n <span style="color:#e45649">with</span></code>
+      <code><span style="">|</span> O    => <span style="color:#50a14f">"one"</span></code>
+      <code><span style="">|</span> S n' => <span style="color:#50a14f">"two"</span></code>
+      <code><span style="color:#e45649">end</span>.</code>
+    </pre>
+
+    <p class="note">Вызывается метод компилятора для получения конструктора имён <code>nat</code>
+
+    <!-- <p class="note">если <code>n</code> — сложное выражение, то предварительно вычисляется его тип</p> -->
+
+    <style> pre.kek > code::before { content: '' !important } </style>
+    <span class="thing">/11</span>
+  </section>
+
+  	<section class="slide">
+  		<h2>Результат работы</h2>
+
+  		<ul>
+  			<li>Подсветка синтаксиса</li>
+  			<li>Сниппеты, автодополнение</li>
+  			<li>Компиляция предложений по шагам</li>
+  			<li>Запоминание вычисленных результатов</li>
+  			<li>Генерация веток для сопоставление с образцома</li>
+  			<!-- <li>Автодополнение, основанное на выводе типов</li> -->
+  		</ul>
+  		<p class="note"></p>
+      <span class="thing">/11</span>
+  	</section>
+
+	<div class="progress"></div>
+
+	<script src="node_modules/shower-core/shower.min.js"></script>
+	<!-- Copyright © 2017 Yours Truly, Famous Inc. -->
+
+</body>
+</html>
